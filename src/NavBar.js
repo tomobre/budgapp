@@ -6,12 +6,14 @@ import Nav from "react-bootstrap/Nav";
 function NavBar() {
   return (
     <div>
-      <Navbar className="mb-5" bg="light" variant="light">
-        <Nav className="mr-5">
-          <Link className="mr-5" to="/">
+      <Navbar className="mb-5 " bg="light" variant="light">
+        <Nav className="mr-5 ">
+          <Link className="mr-5 text-decoration-none" to="/">
             Inicio
           </Link>
-          <Link to="/newdata">Agregar Operación</Link>
+          <Link className="text-decoration-none" to="/newdata">
+            Agregar Operación
+          </Link>
         </Nav>
       </Navbar>
     </div>
