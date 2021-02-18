@@ -3,6 +3,8 @@ import { Route } from "react-router-dom";
 import Home from "./Home";
 import NavBar from "./NavBar";
 import styled from "styled-components/macro";
+import Register from "./Register";
+import LogIn from "./Login";
 
 const Wrapper = styled.div`
   font-family: "Quicksand", sans-serif;
@@ -28,6 +30,8 @@ function App() {
       </div>
 
       <NavBar />
+      <Route exact path="/login" component={LogIn} />
+      <Route exact path="/register" component={Register} />
       <Route exact path="/newdata" component={NewData} />
       <Route exact path="/" component={Home} />
     </Wrapper>

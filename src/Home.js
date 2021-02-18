@@ -37,34 +37,47 @@ function Home() {
   const { register, handleSubmit, errors } = useForm();
 
   React.useEffect(() => {
+    const checkToken = localStorage.getItem("token");
     let mounted = true;
-    axios
-      .get("http://localhost:4000/operations")
-      .then((info) => {
-        if (mounted) {
-          setData(info.data);
+    if (checkToken) {
+      axios
+        .get("http://localhost:4000/user/auth", {
+          headers: { "x-access-token": localStorage.getItem("token") },
+        })
+        .then((res) => {
+          let user = localStorage.getItem("user");
 
-          let sumIng = data
-            .filter((el) => {
-              return el.tipo === "INGRESO";
+          axios
+            .get(`http://localhost:4000/operations/${user}`)
+            .then((info) => {
+              if (mounted) {
+                setData(info.data);
+
+                let sumIng = data
+                  .filter((el) => {
+                    return el.type === "INGRESO";
+                  })
+                  .reduce((prev, next) => {
+                    return { amount: prev.amount + next.amount };
+                  });
+
+                let sumEgr = data
+                  .filter((el) => {
+                    return el.type === "EGRESO";
+                  })
+                  .reduce((prev, next) => {
+                    return { amount: prev.amount + next.amount };
+                  });
+
+                setTotalCount(sumIng.amount - sumEgr.amount);
+              }
             })
-            .reduce((prev, next) => {
-              return { monto: prev.monto + next.monto };
-            });
-
-          let sumEgr = data
-            .filter((el) => {
-              return el.tipo === "EGRESO";
-            })
-            .reduce((prev, next) => {
-              return { monto: prev.monto + next.monto };
-            });
-
-          setTotalCount(sumIng.monto - sumEgr.monto);
-        }
-      })
-      .catch((err) => console.log(err));
-
+            .catch((err) => console.log(err));
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
     return function cleanup() {
       mounted = false;
     };
@@ -72,12 +85,12 @@ function Home() {
 
   const handleModif = (e) => {
     axios
-      .get(`http://localhost:4000/operations/${e.target.id}`)
+      .get(`http://localhost:4000/operations/user/${e.target.id}`)
       .then((res) => {
         console.log(res.data);
         setModifyOk({ state: true, id: e.target.id });
-        setModifyConcept(res.data[0].concepto);
-        setModifyAmount(res.data[0].monto);
+        setModifyConcept(res.data[0].concept);
+        setModifyAmount(res.data[0].amount);
         setModifyDate(res.data[0].date.slice(0, 10));
       })
       .catch((err) => console.log(err));
@@ -85,8 +98,8 @@ function Home() {
 
   const onSubmit = () => {
     let updateData = {
-      concepto: modifyConcept,
-      monto: parseInt(modifyAmount, 10),
+      concept: modifyConcept,
+      amount: parseInt(modifyAmount, 10),
       date: modifyDate,
     };
     console.log(updateData);
@@ -119,27 +132,29 @@ function Home() {
   };
 
   const handleDelete = (e) => {
-    axios
-      .delete(`http://localhost:4000/delete/${e.target.id}`)
-      .then(() => {
-        console.log("deleted");
+    let conf = window.confirm("¿Esta seguro que desea eliminar la operación?");
 
-        setResponse(`Se eliminó la operacion con exito`);
+    if (conf) {
+      axios
+        .delete(`http://localhost:4000/delete/${e.target.id}`)
+        .then(() => {
+          setResponse(`Se eliminó la operacion con exito`);
 
-        setTimeout(() => {
-          setResponse("");
-        }, 5000);
-      })
-      .catch((err) => {
-        console.log(err);
-        setResponse(
-          `Hubo un error al intentar eliminar  la operacion: ${err.response.data.error.message}`
-        );
+          setTimeout(() => {
+            setResponse("");
+          }, 5000);
+        })
+        .catch((err) => {
+          console.log(err);
+          setResponse(
+            `Hubo un error al intentar eliminar  la operacion: ${err.response.data.error.message}`
+          );
 
-        setTimeout(() => {
-          setResponse("");
-        }, 5000);
-      });
+          setTimeout(() => {
+            setResponse("");
+          }, 5000);
+        });
+    }
   };
 
   if (!data.length) return <h3>No hay operaciones registradas</h3>;
@@ -153,6 +168,7 @@ function Home() {
             <th>Concepto</th>
             <th>Tipo</th>
             <th>Monto</th>
+            <th>Categoria</th>
           </tr>
         </thead>
         <tbody>
@@ -161,9 +177,10 @@ function Home() {
               return (
                 <tr key={info.id}>
                   <td>{new Date(info.date).toLocaleDateString()}</td>
-                  <td>{info.concepto}</td>
-                  <td>{info.tipo}</td>
-                  <td>{info.monto} $</td>
+                  <td>{info.concept}</td>
+                  <td>{info.type}</td>
+                  <td>{info.amount} $</td>
+                  <td>{info.category} </td>
                   <td>
                     <Img
                       className="mr-3"

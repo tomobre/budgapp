@@ -22,36 +22,43 @@ function NewData() {
   const { register, handleSubmit, errors } = useForm();
 
   const onSubmit = () => {
-    const newInfo = {
-      concepto: concept,
-      monto: parseInt(amount, 10),
-      date: date,
-      tipo: type,
-    };
-    axios
-      .post("http://localhost:4000/add", newInfo)
-      .then((res) => {
-        console.log(res.data);
-        setConcept("");
-        setAmount("");
-        setDate("");
-        setType("INGRESO");
-        setResponse("Se ha añadido la nueva operacion con exito");
+    const checkUser = localStorage.getItem("user");
+    if (checkUser) {
+      const newInfo = {
+        concept: concept,
+        amount: parseInt(amount, 10),
+        date: date,
+        type: type,
+        user: checkUser,
+      };
+      axios
+        .post("http://localhost:4000/add", newInfo)
+        .then((res) => {
+          console.log(res.data);
+          setConcept("");
+          setAmount("");
+          setDate("");
+          setType("INGRESO");
 
-        setTimeout(() => {
-          setResponse("");
-        }, 5000);
-      })
-      .catch((err) => {
-        setResponse(
-          `Hubo un error al añadir la nueva operacion: ${err.response.data.error.message}`
-        );
-        console.log(err);
+          setResponse("Se ha añadido la nueva operacion con exito");
 
-        setTimeout(() => {
-          setResponse("");
-        }, 5000);
-      });
+          setTimeout(() => {
+            setResponse("");
+          }, 5000);
+        })
+        .catch((err) => {
+          setResponse(
+            `Hubo un error al añadir la nueva operacion: ${err.response.data.error.message}`
+          );
+          console.log(err);
+
+          setTimeout(() => {
+            setResponse("");
+          }, 5000);
+        });
+    } else {
+      setResponse(`No se ha ingresado a una cuenta`);
+    }
   };
 
   return (
