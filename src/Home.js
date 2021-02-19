@@ -1,3 +1,6 @@
+// https://aprendizfinanciero.com/como-categorizar-tus-gastos/
+// https://www.inbestme.com/blog/el-presupuesto-ingresos/
+
 import React from "react";
 import axios from "axios";
 import Table from "react-bootstrap/Table";
@@ -31,7 +34,12 @@ function Home() {
   const [modifyConcept, setModifyConcept] = React.useState("");
   const [modifyAmount, setModifyAmount] = React.useState("");
   const [modifyDate, setModifyDate] = React.useState("");
+  const [modifyCategory, setModifyCategory] = React.useState("");
   const [totalCount, setTotalCount] = React.useState(0);
+  const [type, setType] = React.useState("");
+  const [filterCategory, setFilterCategory] = React.useState("TODAS");
+  const [visible, setVisible] = React.useState({ beg: 0, end: 10 });
+
   const [response, setResponse] = React.useState("");
 
   const { register, handleSubmit, errors } = useForm();
@@ -45,12 +53,12 @@ function Home() {
           headers: { "x-access-token": localStorage.getItem("token") },
         })
         .then((res) => {
-          let user = localStorage.getItem("user");
+          if (mounted) {
+            let user = localStorage.getItem("user");
 
-          axios
-            .get(`http://localhost:4000/operations/${user}`)
-            .then((info) => {
-              if (mounted) {
+            axios
+              .get(`http://localhost:4000/operations/${user}`)
+              .then((info) => {
                 setData(info.data);
 
                 let sumIng = data
@@ -70,9 +78,9 @@ function Home() {
                   });
 
                 setTotalCount(sumIng.amount - sumEgr.amount);
-              }
-            })
-            .catch((err) => console.log(err));
+              })
+              .catch((err) => console.log(err));
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -81,7 +89,7 @@ function Home() {
     return function cleanup() {
       mounted = false;
     };
-  }, [data]);
+  }, [data, totalCount]);
 
   const handleModif = (e) => {
     axios
@@ -92,6 +100,7 @@ function Home() {
         setModifyConcept(res.data[0].concept);
         setModifyAmount(res.data[0].amount);
         setModifyDate(res.data[0].date.slice(0, 10));
+        setType(res.data[0].type);
       })
       .catch((err) => console.log(err));
   };
@@ -101,6 +110,7 @@ function Home() {
       concept: modifyConcept,
       amount: parseInt(modifyAmount, 10),
       date: modifyDate,
+      category: modifyCategory,
     };
     console.log(updateData);
 
@@ -129,6 +139,14 @@ function Home() {
           setResponse("");
         }, 5000);
       });
+  };
+
+  const loadMore = () => {
+    setVisible({ beg: visible.beg + 10, end: visible.end + 10 });
+  };
+
+  const loadBack = () => {
+    setVisible({ beg: visible.beg - 10, end: visible.end - 10 });
   };
 
   const handleDelete = (e) => {
@@ -168,38 +186,68 @@ function Home() {
             <th>Concepto</th>
             <th>Tipo</th>
             <th>Monto</th>
-            <th>Categoria</th>
+            <th className="text-center ">
+              Categoria
+              <Form.Control
+                className="mt-3"
+                as="select"
+                onChange={(e) => setFilterCategory(e.target.value)}
+              >
+                <option defaultValue value="TODAS">
+                  TODAS
+                </option>
+                <option value="FIJO">FIJO</option>
+                <option value="VARIABLE">VARIABLE</option>
+                <option value="EXTRAORDINARIO">EXTRAORDINARIO</option>
+                <option value="ALIMENTACION">ALIMENTACION</option>
+                <option value="CUENTA Y PAGOS">CUENTA Y PAGOS</option>
+                <option value="CASA">CASA</option>
+                <option value="TRANSPORTE">TRANSPORTE</option>
+                <option value="SALUD E HIGIENE">SALUD E HIGIENE</option>
+                <option value="DIVERSION">DIVERSION</option>
+                <option value="OTROS">OTROS</option>
+              </Form.Control>
+            </th>
           </tr>
         </thead>
         <tbody>
           {data.length &&
-            data.map((info) => {
-              return (
-                <tr key={info.id}>
-                  <td>{new Date(info.date).toLocaleDateString()}</td>
-                  <td>{info.concept}</td>
-                  <td>{info.type}</td>
-                  <td>{info.amount} $</td>
-                  <td>{info.category} </td>
-                  <td>
-                    <Img
-                      className="mr-3"
-                      id={info.id}
-                      alt="Modificar"
-                      onClick={handleModif}
-                      src="https://icongr.am/entypo/new-message.svg?size=25&color=0038e0"
-                    ></Img>
+            data
+              .filter((op) => {
+                if (filterCategory === "TODAS") {
+                  return op.category;
+                } else {
+                  return op.category === filterCategory;
+                }
+              })
+              .slice(visible.beg, visible.end)
+              .map((info) => {
+                return (
+                  <tr key={info.id}>
+                    <td>{new Date(info.date).toLocaleDateString()}</td>
+                    <td>{info.concept}</td>
+                    <td>{info.type}</td>
+                    <td>{info.amount} $</td>
+                    <td>{info.category} </td>
+                    <td>
+                      <Img
+                        className="mr-3"
+                        id={info.id}
+                        alt="Modificar"
+                        onClick={handleModif}
+                        src="https://icongr.am/entypo/new-message.svg?size=25&color=0038e0"
+                      ></Img>
 
-                    <Img
-                      id={info.id}
-                      alt="Eliminar"
-                      onClick={handleDelete}
-                      src="https://icongr.am/jam/trash-alt.svg?size=26&color=ff0000"
-                    ></Img>
-                  </td>
-                </tr>
-              );
-            })}
+                      <Img
+                        id={info.id}
+                        alt="Eliminar"
+                        onClick={handleDelete}
+                        src="https://icongr.am/jam/trash-alt.svg?size=26&color=ff0000"
+                      ></Img>
+                    </td>
+                  </tr>
+                );
+              })}
           <tr>
             <td colSpan="2"></td>
             <Total>TOTAL</Total>
@@ -207,7 +255,24 @@ function Home() {
           </tr>
         </tbody>
       </Table>
-
+      {visible.beg > 0 && (
+        <div className=" mt-1 mb-2 d-flex justify-content-center">
+          <Img
+            alt="previous"
+            src="https://icongr.am/jam/chevrons-circle-left-f.svg?size=30&color=699dfb"
+            onClick={loadBack}
+          ></Img>
+        </div>
+      )}
+      {visible.end < data.length && (
+        <div className=" mt-1 mb-2 d-flex justify-content-center">
+          <Img
+            alt="next"
+            src="https://icongr.am/jam/chevrons-circle-right-f.svg?size=30&color=699dfb"
+            onClick={loadMore}
+          ></Img>
+        </div>
+      )}
       {modifyOk.state && (
         <Wrapper>
           <Form>
@@ -273,6 +338,39 @@ function Home() {
                 type="number"
               />
             </Form.Group>
+            {type === "INGRESO" ? (
+              <Form.Group controlId="exampleForm.ControlSelect1">
+                <Form.Control
+                  as="select"
+                  onChange={(e) => setModifyCategory(e.target.value)}
+                >
+                  <option value="" disabled defaultValue>
+                    Categoria
+                  </option>
+                  <option value="FIJO">FIJO</option>
+                  <option value="VARIABLE">VARIABLE</option>
+                  <option value="EXTRAORDINARIO">EXTRAORDINARIO</option>
+                </Form.Control>
+              </Form.Group>
+            ) : (
+              <Form.Group controlId="exampleForm.ControlSelect1">
+                <Form.Control
+                  as="select"
+                  onChange={(e) => setModifyCategory(e.target.value)}
+                >
+                  <option value="" disabled defaultValue>
+                    Categoria
+                  </option>
+                  <option value="ALIMENTACION">ALIMENTACION</option>
+                  <option value="CUENTA Y PAGOS">CUENTA Y PAGOS</option>
+                  <option value="CASA">CASA</option>
+                  <option value="TRANSPORTE">TRANSPORTE</option>
+                  <option value="SALUD E HIGIENE">SALUD E HIGIENE</option>
+                  <option value="DIVERSION">DIVERSION</option>
+                  <option value="OTROS">OTROS</option>
+                </Form.Control>
+              </Form.Group>
+            )}
             <span className="text-danger text-small d-block mb-2">
               {errors.date && errors.date.message}
             </span>

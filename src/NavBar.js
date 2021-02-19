@@ -31,32 +31,41 @@ function NavBar() {
 
   return (
     <div>
-      <Navbar className="mb-5 " bg="light" variant="light">
-        <Nav className="mr-5 ">
-          <Link className="mr-5 text-decoration-none" to="/">
-            Inicio
-          </Link>
+      <Navbar
+        collapseOnSelect
+        expand="lg"
+        className="mb-5 "
+        bg="light"
+        variant="light"
+      >
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="mr-5 ">
+            <Link className="mr-5 text-decoration-none" to="/">
+              Inicio
+            </Link>
 
-          <Link className=" mr-5 text-decoration-none" to="/login">
-            Ingresar
-          </Link>
-          <Link className=" mr-5 text-decoration-none" to="/register">
-            Registrarse
-          </Link>
-          <Link className=" mr-5 text-decoration-none" to="/newdata">
-            Agregar Operación
-          </Link>
-          {user !== null && (
-            <Acount>
-              <p>{localStorage.getItem("user").toUpperCase()}</p>
-              <Img
-                alt="Log Out"
-                onClick={deleteToken}
-                src="https://icongr.am/feather/log-out.svg?size=20&color=3d81ff"
-              ></Img>
-            </Acount>
-          )}
-        </Nav>
+            <Link className=" mr-5 text-decoration-none" to="/login">
+              Ingresar
+            </Link>
+            <Link className=" mr-5 text-decoration-none" to="/register">
+              Registrarse
+            </Link>
+            <Link className=" mr-5 text-decoration-none" to="/newdata">
+              Agregar Operación
+            </Link>
+            {user !== null && (
+              <Acount>
+                <p>{localStorage.getItem("user").toUpperCase()}</p>
+                <Img
+                  alt="Log Out"
+                  onClick={deleteToken}
+                  src="https://icongr.am/feather/log-out.svg?size=20&color=3d81ff"
+                ></Img>
+              </Acount>
+            )}
+          </Nav>
+        </Navbar.Collapse>
       </Navbar>
     </div>
   );

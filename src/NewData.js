@@ -17,6 +17,7 @@ function NewData() {
   const [amount, setAmount] = React.useState("");
   const [date, setDate] = React.useState("");
   const [type, setType] = React.useState("INGRESO");
+  const [category, setCategory] = React.useState("FIJO");
   const [response, setResponse] = React.useState("");
 
   const { register, handleSubmit, errors } = useForm();
@@ -30,6 +31,7 @@ function NewData() {
         date: date,
         type: type,
         user: checkUser,
+        category: category,
       };
       axios
         .post("http://localhost:4000/add", newInfo)
@@ -48,7 +50,7 @@ function NewData() {
         })
         .catch((err) => {
           setResponse(
-            `Hubo un error al añadir la nueva operacion: ${err.response.data.error.message}`
+            `Hubo un error al añadir la nueva operacion: ${err.response}`
           );
           console.log(err);
 
@@ -123,15 +125,46 @@ function NewData() {
           </Form.Group>
 
           <Form.Group controlId="exampleForm.ControlSelect1">
-            <Form.Control
-              as="select"
-              onChange={(e) => setType(e.target.value)}
-              placeholder="Tipo"
-            >
+            <Form.Control as="select" onChange={(e) => setType(e.target.value)}>
               <option value="INGRESO">INGRESO</option>
               <option value="EGRESO">EGRESO</option>
             </Form.Control>
           </Form.Group>
+
+          {type === "INGRESO" ? (
+            <Form.Group controlId="exampleForm.ControlSelect1">
+              <Form.Control
+                as="select"
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option value="" disabled defaultValue>
+                  Categoria
+                </option>
+                <option value="FIJO">FIJO</option>
+                <option value="VARIABLE">VARIABLE</option>
+                <option value="EXTRAORDINARIO">EXTRAORDINARIO</option>
+              </Form.Control>
+            </Form.Group>
+          ) : (
+            <Form.Group controlId="exampleForm.ControlSelect1">
+              <Form.Control
+                as="select"
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option value="" disabled defaultValue>
+                  Categoria
+                </option>
+                <option value="ALIMENTACION">ALIMENTACION</option>
+                <option value="CUENTA Y PAGOS">CUENTA Y PAGOS</option>
+                <option value="CASA">CASA</option>
+                <option value="TRANSPORTE">TRANSPORTE</option>
+                <option value="SALUD E HIGIENE">SALUD E HIGIENE</option>
+                <option value="DIVERSION">DIVERSION</option>
+                <option value="OTROS">OTROS</option>
+              </Form.Control>
+            </Form.Group>
+          )}
+
           <span className="text-danger text-small d-block mb-2">
             {errors.date && errors.date.message}
           </span>
