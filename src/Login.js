@@ -10,6 +10,7 @@ const Wrapper = styled.div`
   border-radius: 0.375rem;
   box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.15);
   padding: 3rem;
+  margin-bottom: 2rem;
 `;
 
 function Login() {
@@ -38,7 +39,7 @@ function Login() {
           if (!res.data.auth) {
             setResponse({
               state: true,
-              message: "Hubo un error al ingresar a la cuenta",
+              message: "Usuario o contraseña incorrecto",
             });
 
             setTimeout(() => {
@@ -57,15 +58,36 @@ function Login() {
             }, 3000);
           }
         })
-        .catch(() => {});
+        .catch((err) => {
+          //console.log(err.response.data[0]);
+          setResponse({
+            state: true,
+            message: `Ocurrio un error ${
+              err.response ? err.response.status : 503
+            } al registrarse: ${err.response ? err.response.data[0].msg : err}`,
+          });
+
+          setTimeout(() => {
+            setResponse({ state: false, message: "" });
+          }, 5000);
+        });
+    }
+  };
+
+  const handleKeyUp = (e) => {
+    if (e.keyCode === 13) {
+      handleSubmit(onLogin)();
     }
   };
 
   return (
     <div>
+      {response.state && (
+        <h3 className="text-center mt-5 mb-5">{response.message}</h3>
+      )}
       <Wrapper className="container">
         <h3 className="mb-5 text-center">INGRESAR</h3>
-        <Form>
+        <Form onKeyUp={handleKeyUp}>
           <Form.Group>
             <Form.Control
               ref={register({
@@ -129,9 +151,6 @@ function Login() {
           </div>
         </Form>
       </Wrapper>
-      {response.state && (
-        <h3 className="text-center mt-5">{response.message}</h3>
-      )}
     </div>
   );
 }

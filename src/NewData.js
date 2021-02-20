@@ -10,6 +10,7 @@ const Wrapper = styled.div`
   border-radius: 0.375rem;
   box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.15);
   padding: 3rem;
+  margin-bottom: 2rem;
 `;
 
 function NewData() {
@@ -22,8 +23,17 @@ function NewData() {
     state: false,
     message: "",
   });
+  const timeout = React.useRef(undefined);
 
   const { register, handleSubmit, errors } = useForm();
+
+  React.useEffect(() => {
+    return () => {
+      if (timeout.current !== undefined) {
+        clearTimeout(timeout.current);
+      }
+    };
+  }, []);
 
   const onSubmit = () => {
     const checkUser = localStorage.getItem("user");
@@ -40,26 +50,25 @@ function NewData() {
       axios
         .post("http://localhost:4000/add", newInfo)
         .then((res) => {
-          console.log(res.data);
           setConcept("");
           setAmount("");
           setDate("");
-          setType("INGRESO");
-          setCategory("FIJO");
 
           setResponse({
             state: true,
             message: "Se ha añadido la nueva operacion con exito",
           });
 
-          setTimeout(() => {
+          timeout.current = setTimeout(() => {
             setResponse({ state: false, message: "" });
           }, 5000);
         })
         .catch((err) => {
           setResponse({
             state: true,
-            message: `Hubo un error al añadir la nueva operacion: ${err.response}`,
+            message: `Ocurrio un error ${
+              err.response ? err.response.status : 503
+            } al registrarse: ${err.response ? err.response.data[0].msg : err}`,
           });
           console.log(err);
 
@@ -75,11 +84,20 @@ function NewData() {
     }
   };
 
+  const handleKeyUp = (e) => {
+    if (e.keyCode === 13) {
+      handleSubmit(onSubmit)();
+    }
+  };
+
   return (
     <div>
+      {response.state && (
+        <h3 className="text-center mt-5 mb-5">{response.message}</h3>
+      )}
       <Wrapper className="container">
         <h3 className="mb-5 text-center">NUEVA OPERACIÓN</h3>
-        <Form>
+        <Form onKeyUp={handleKeyUp}>
           <Form.Group>
             <Form.Control
               ref={register({
@@ -140,7 +158,7 @@ function NewData() {
             />
           </Form.Group>
           <div key="1456">
-            <Form.Group controlId="exampleForm.ControlSelect1">
+            <Form.Group>
               <Form.Control
                 as="select"
                 onChange={(e) => {
@@ -156,31 +174,39 @@ function NewData() {
             </Form.Group>
           </div>
           {type === "INGRESO" ? (
-            <Form.Group controlId="exampleForm.ControlSelect1">
-              <Form.Control
-                as="select"
-                onChange={(e) => setCategory(e.target.value)}
-              >
-                <option value="FIJO">FIJO</option>
-                <option value="VARIABLE">VARIABLE</option>
-                <option value="EXTRAORDINARIO">EXTRAORDINARIO</option>
-              </Form.Control>
-            </Form.Group>
+            <div key="181">
+              <Form.Group controlId="exampleForm.ControlSelect1">
+                <Form.Control
+                  as="select"
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  <option defaultValue value="FIJO">
+                    FIJO
+                  </option>
+                  <option value="VARIABLE">VARIABLE</option>
+                  <option value="EXTRAORDINARIO">EXTRAORDINARIO</option>
+                </Form.Control>
+              </Form.Group>
+            </div>
           ) : (
-            <Form.Group controlId="exampleForm.ControlSelect1">
-              <Form.Control
-                as="select"
-                onChange={(e) => setCategory(e.target.value)}
-              >
-                <option value="ALIMENTACION">ALIMENTACION</option>
-                <option value="CUENTA Y PAGOS">CUENTA Y PAGOS</option>
-                <option value="CASA">CASA</option>
-                <option value="TRANSPORTE">TRANSPORTE</option>
-                <option value="SALUD E HIGIENE">SALUD E HIGIENE</option>
-                <option value="DIVERSION">DIVERSION</option>
-                <option value="OTROS">OTROS</option>
-              </Form.Control>
-            </Form.Group>
+            <div key="1813">
+              <Form.Group controlId="exampleForm.ControlSelect1">
+                <Form.Control
+                  as="select"
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  <option defaultValue value="ALIMENTACION">
+                    ALIMENTACION
+                  </option>
+                  <option value="CUENTA Y PAGOS">CUENTA Y PAGOS</option>
+                  <option value="CASA">CASA</option>
+                  <option value="TRANSPORTE">TRANSPORTE</option>
+                  <option value="SALUD E HIGIENE">SALUD E HIGIENE</option>
+                  <option value="DIVERSION">DIVERSION</option>
+                  <option value="OTROS">OTROS</option>
+                </Form.Control>
+              </Form.Group>
+            </div>
           )}
 
           <span className="text-danger text-small d-block mb-2">
@@ -199,9 +225,6 @@ function NewData() {
           </div>
         </Form>
       </Wrapper>
-      {response.state && (
-        <h3 className="text-center mt-5">{response.message}</h3>
-      )}
     </div>
   );
 }

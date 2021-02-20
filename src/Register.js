@@ -10,6 +10,7 @@ const Wrapper = styled.div`
   border-radius: 0.375rem;
   box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.15);
   padding: 3rem;
+  margin-bottom: 2rem;
 `;
 
 function Register() {
@@ -27,7 +28,6 @@ function Register() {
         password: password,
       })
       .then((res) => {
-        console.log(res.data);
         setResponse({ state: true, message: "Se ha registrado con exito" });
 
         setTimeout(() => {
@@ -35,10 +35,11 @@ function Register() {
         }, 5000);
       })
       .catch((err) => {
-        console.log(err);
         setResponse({
           state: true,
-          message: "Ocurrio un problema al registrarse",
+          message: `Ocurrio un error ${
+            err.response ? err.response.status : 503
+          } al registrarse: ${err.response ? err.response.data : err}`,
         });
         setTimeout(() => {
           setResponse({ state: false, message: "" });
@@ -46,11 +47,20 @@ function Register() {
       });
   };
 
+  const handleKeyUp = (e) => {
+    if (e.keyCode === 13) {
+      handleSubmit(onRegister)();
+    }
+  };
+
   return (
     <div>
+      {response.state && (
+        <h3 className="text-center mt-5 mb-5">{response.message}</h3>
+      )}
       <Wrapper className="container">
         <h3 className="mb-5 text-center">REGISTRO</h3>
-        <Form>
+        <Form onKeyUp={handleKeyUp}>
           <Form.Group>
             <Form.Control
               ref={register({
@@ -114,9 +124,6 @@ function Register() {
           </div>
         </Form>
       </Wrapper>
-      {response.state && (
-        <h3 className="text-center mt-5">{response.message}</h3>
-      )}
     </div>
   );
 }

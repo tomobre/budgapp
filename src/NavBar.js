@@ -26,7 +26,7 @@ function NavBar() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     window.location.reload();
-    setUser(undefined);
+    setUser(null);
   };
 
   return (
@@ -54,9 +54,12 @@ function NavBar() {
             <Link className=" mr-5 text-decoration-none" to="/newdata">
               Agregar Operación
             </Link>
+            <Link className=" mr-5 text-decoration-none" to="/categories">
+              Categorias
+            </Link>
             {user !== null && (
               <Acount>
-                <p>{localStorage.getItem("user").toUpperCase()}</p>
+                <p>{user.toUpperCase()}</p>
                 <Img
                   alt="Log Out"
                   onClick={deleteToken}

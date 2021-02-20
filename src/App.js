@@ -5,6 +5,8 @@ import NavBar from "./NavBar";
 import styled from "styled-components/macro";
 import Register from "./Register";
 import LogIn from "./Login";
+import React from "react";
+import Categories from "./Categories";
 
 const Wrapper = styled.div`
   font-family: "Quicksand", sans-serif;
@@ -33,6 +35,7 @@ function App() {
       <Route exact path="/login" component={LogIn} />
       <Route exact path="/register" component={Register} />
       <Route exact path="/newdata" component={NewData} />
+      <Route exact path="/categories" component={Categories} />
       <Route exact path="/" component={Home} />
     </Wrapper>
   );

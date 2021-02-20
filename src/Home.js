@@ -1,6 +1,3 @@
-// https://aprendizfinanciero.com/como-categorizar-tus-gastos/
-// https://www.inbestme.com/blog/el-presupuesto-ingresos/
-
 import React from "react";
 import axios from "axios";
 import Table from "react-bootstrap/Table";
@@ -9,16 +6,8 @@ import { useForm } from "react-hook-form";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import styled from "styled-components/macro";
-
-const Wrapper = styled.div`
-  background-color: white;
-  border-radius: 0.375rem;
-  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.15);
-  padding: 3rem;
-  margin-bottom: 3rem;
-  margin-right: 3rem;
-  margin-left: 3rem;
-`;
+import Modal from "react-modal";
+Modal.setAppElement("#root");
 
 const Total = styled.td`
   font-weight: 700;
@@ -28,10 +17,44 @@ const Img = styled.img`
   cursor: pointer;
 `;
 
+const modalStyles = {
+  content: {
+    backgroundColor: "white",
+    borderRadius: "0.375rem",
+    boxShadow: "0 5px 10px 0 rgba(0, 0, 0, 0.15)",
+    padding: "3rem",
+    marginBottom: "3rem",
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    transform: "translate(-50%, -50%)",
+    marginLeft: "2vw",
+    marginRightt: "2vh",
+  },
+  overlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backdropFilter: "blur(2px)",
+    transition: "all 2000ms ease",
+  },
+  button: {
+    backgroundColor: "transparent",
+    border: "none",
+    position: "absolute",
+    right: "4%",
+    top: "2%",
+  },
+};
+
 function Home() {
+  const [modal, setModal] = React.useState(false);
+
   const [data, setData] = React.useState([]);
   const [modifyOk, setModifyOk] = React.useState({
-    state: false,
     id: "",
     message: "",
   });
@@ -60,12 +83,12 @@ function Home() {
           headers: { "x-access-token": localStorage.getItem("token") },
         })
         .then((res) => {
-          if (mounted) {
-            let user = localStorage.getItem("user");
+          let user = localStorage.getItem("user");
 
-            axios
-              .get(`http://localhost:4000/operations/${user}`)
-              .then((info) => {
+          axios
+            .get(`http://localhost:4000/operations/${user}`)
+            .then((info) => {
+              if (mounted) {
                 setData(info.data);
                 if (data.length) {
                   setResponseData({ state: false, message: "" });
@@ -98,26 +121,53 @@ function Home() {
                   }
                 } else {
                   setTimeout(() => {
-                    setResponseData({
-                      state: true,
-                      message: "No hay operaciones registradas con el usuario",
-                    });
+                    if (mounted) {
+                      setResponseData({
+                        state: true,
+                        message:
+                          "No hay operaciones registradas con el usuario",
+                      });
+                    }
                   }, 5000);
                 }
-              })
-              .catch((err) => {
-                setResponseData({
-                  state: true,
-                  message: `Ocurrio un error: ${err}`,
-                });
+              }
+            })
+            .catch((err) => {
+              setResponseData({
+                state: true,
+                message: `Ocurrio un error ${
+                  err.response ? err.response.status : 503
+                } al traer la informacion: ${
+                  err.response ? err.response.data : err
+                }`,
               });
-          }
+            });
         })
         .catch((err) => {
+          function reloadPage() {
+            let currentDocumentTimestamp = new Date(
+              performance.timing.domLoading
+            ).getTime();
+
+            let now = Date.now();
+
+            let tenSec = 10 * 1000;
+            let plusTenSec = currentDocumentTimestamp + tenSec;
+            if (now > plusTenSec) {
+              window.location.reload();
+            }
+          }
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
           setResponseData({
             state: true,
-            message: `Ocurrio un error: ${err}`,
+            message: `Ocurrio un error ${
+              err.response ? err.response.status : 503
+            } con la cuenta del usuario: ${
+              err.response ? err.response.data : err
+            }`,
           });
+          reloadPage();
         });
     } else {
       setResponseData({
@@ -132,12 +182,12 @@ function Home() {
   }, [data, totalCount]);
 
   const handleModif = (e) => {
-    setModifyOk({ state: true, id: e.target.id, message: "Cargando..." });
+    setModal(true);
+    setModifyOk({ id: e.target.id, message: "Cargando..." });
     axios
       .get(`http://localhost:4000/operations/user/${e.target.id}`)
       .then((res) => {
-        console.log(res.data);
-        setModifyOk({ state: true, id: e.target.id, message: "" });
+        setModifyOk({ id: e.target.id, message: "" });
         setModifyConcept(res.data[0].concept);
         setModifyAmount(res.data[0].amount);
         setModifyDate(res.data[0].date.slice(0, 10));
@@ -146,32 +196,30 @@ function Home() {
       })
       .catch((err) => {
         setModifyOk({
-          state: true,
           id: e.target.id,
-          message: `Hubo un error al cargar el contenido: ${err}`,
+          message: `Ocurrio un error ${
+            err.response ? err.response.status : 503
+          } al cargar el contenido: ${err.response ? err.response.data : err}`,
         });
-        console.log(err);
 
         setTimeout(() => {
           setModifyOk({
-            state: false,
             id: "",
             message: ``,
           });
-          console.log(err);
         }, 5000);
       });
   };
 
   const onSubmit = (e) => {
-    setModifyOk({ state: false, id: "", message: "" });
+    setModifyOk({ id: "", message: "" });
+    setModal(false);
     let updateData = {
       concept: modifyConcept,
       amount: parseInt(modifyAmount, 10),
       date: modifyDate,
       category: modifyCategory,
     };
-    console.log(updateData);
 
     axios
       .put(
@@ -179,8 +227,6 @@ function Home() {
         updateData
       )
       .then(() => {
-        console.log("modified");
-
         setResponseModified("Se ha modificado la operacion con exito");
 
         setTimeout(() => {
@@ -188,13 +234,28 @@ function Home() {
         }, 5000);
       })
       .catch((err) => {
-        console.log(err);
-        setResponseModified(`Hubo un error al modificar la operacion: ${err}`);
+        setResponseModified(
+          `Hubo un error ${
+            err.response.status ? err.response.status : 503
+          } al modificar la operacion: ${
+            err.response.data[0].msg
+              ? err.response.data[0].msg
+              : err.response
+              ? err.response.data
+              : err
+          } `
+        );
 
         setTimeout(() => {
           setResponseModified("");
         }, 5000);
       });
+  };
+
+  const handleKeyUp = (e) => {
+    if (e.keyCode === 13) {
+      handleSubmit(onSubmit)();
+    }
   };
 
   const loadMore = () => {
@@ -221,7 +282,11 @@ function Home() {
         .catch((err) => {
           console.log(err);
           setResponseModified(
-            `Hubo un error al intentar eliminar  la operacion: ${err}`
+            `Hubo un error ${
+              err.response.status ? err.response.status : 503
+            } al intentar eliminar la operacion: ${
+              err.response ? err.response.data : err
+            } `
           );
 
           setTimeout(() => {
@@ -236,6 +301,8 @@ function Home() {
   } else {
     return (
       <div>
+        <h3 className="text-center mt-5 mb-5">{responseModified}</h3>
+        <h3 className="text-center mt-5 mb-5">{modifyOk.message}</h3>
         <Table className="mb-5" responsive striped bordered hover>
           <thead>
             <tr>
@@ -248,7 +315,10 @@ function Home() {
                 <Form.Control
                   className="mt-3"
                   as="select"
-                  onChange={(e) => setFilterCategory(e.target.value)}
+                  onChange={(e) => {
+                    setFilterCategory(e.target.value);
+                    setVisible({ beg: 0, end: 10 });
+                  }}
                 >
                   <option defaultValue value="TODAS">
                     TODAS
@@ -312,27 +382,47 @@ function Home() {
             </tr>
           </tbody>
         </Table>
-        {visible.beg > 0 && (
-          <div className=" mt-1 mb-2 d-flex justify-content-center">
-            <Img
-              alt="previous"
-              src="https://icongr.am/jam/chevrons-circle-left-f.svg?size=30&color=699dfb"
-              onClick={loadBack}
-            ></Img>
-          </div>
-        )}
-        {visible.end < data.length && (
-          <div className=" mt-1 mb-2 d-flex justify-content-center">
-            <Img
-              alt="next"
-              src="https://icongr.am/jam/chevrons-circle-right-f.svg?size=30&color=699dfb"
-              onClick={loadMore}
-            ></Img>
-          </div>
-        )}
-        {modifyOk.state && (
-          <Wrapper>
-            <Form>
+        <div className="d-flex flex-row justify-content-center mt-1 mb-4">
+          {visible.beg > 0 && (
+            <div className="mx-2 ">
+              <Img
+                alt="previous"
+                src="https://icongr.am/jam/chevrons-circle-left-f.svg?size=30&color=699dfb"
+                onClick={loadBack}
+              ></Img>
+            </div>
+          )}
+          {visible.end <
+            data.filter((op) => {
+              if (filterCategory === "TODAS") {
+                return op.category;
+              } else {
+                return op.category === filterCategory;
+              }
+            }).length && (
+            <div>
+              <Img
+                alt="next"
+                src="https://icongr.am/jam/chevrons-circle-right-f.svg?size=30&color=699dfb"
+                onClick={loadMore}
+              ></Img>
+            </div>
+          )}
+        </div>
+
+        {modal && modifyOk.message === "" && (
+          <Modal
+            closeTimeoutMS={2000}
+            onRequestClose={() => {
+              setModal(false);
+            }}
+            style={modalStyles}
+            isOpen={modal}
+          >
+            <button style={modalStyles.button} onClick={() => setModal(false)}>
+              X
+            </button>
+            <Form onKeyUp={handleKeyUp}>
               <h3 className="mb-5 text-center">MODIFICAR OPERACIÓN</h3>
               <Form.Group>
                 <Form.Control
@@ -454,9 +544,8 @@ function Home() {
                 </Button>
               </div>
             </Form>
-          </Wrapper>
+          </Modal>
         )}
-        <h3 className="text-center mt-5 mb-5">{responseModified}</h3>
       </div>
     );
   }
