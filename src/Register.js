@@ -13,13 +13,14 @@ const Wrapper = styled.div`
 `;
 
 function Register() {
-  const [response, setResponse] = React.useState("");
   const [user, setUser] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [response, setResponse] = React.useState({ state: false, message: "" });
 
   const { register, handleSubmit, errors } = useForm();
 
   const onRegister = () => {
+    setResponse({ state: true, message: "Cargando..." });
     axios
       .post("http://localhost:4000/register", {
         user: user,
@@ -27,18 +28,20 @@ function Register() {
       })
       .then((res) => {
         console.log(res.data);
-        setResponse("Se ha registrado con exito");
+        setResponse({ state: true, message: "Se ha registrado con exito" });
 
         setTimeout(() => {
-          setResponse("");
+          setResponse({ state: false, message: "" });
         }, 5000);
       })
       .catch((err) => {
         console.log(err);
-        setResponse("Ocurrio un problema al registrarse");
-
+        setResponse({
+          state: true,
+          message: "Ocurrio un problema al registrarse",
+        });
         setTimeout(() => {
-          setResponse("");
+          setResponse({ state: false, message: "" });
         }, 5000);
       });
   };
@@ -111,7 +114,9 @@ function Register() {
           </div>
         </Form>
       </Wrapper>
-      <h3 className="text-center mt-5">{response}</h3>
+      {response.state && (
+        <h3 className="text-center mt-5">{response.message}</h3>
+      )}
     </div>
   );
 }

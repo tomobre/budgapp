@@ -13,7 +13,7 @@ const Wrapper = styled.div`
 `;
 
 function Login() {
-  const [response, setResponse] = React.useState("");
+  const [response, setResponse] = React.useState({ state: false, message: "" });
   const [user, setUser] = React.useState("");
   const [password, setPassword] = React.useState("");
 
@@ -22,29 +22,39 @@ function Login() {
   const onLogin = () => {
     const alreadyLogged = localStorage.getItem("token");
     if (alreadyLogged) {
-      setResponse("Para poder ingresar debe salir de su cuenta actual");
+      setResponse({
+        state: true,
+        message: "Para poder ingresar debe salir de su cuenta actual",
+      });
 
       setTimeout(() => {
-        setResponse("");
-      }, 5000);
+        setResponse({ state: false, message: "" });
+      }, 4000);
     } else {
+      setResponse({ state: true, message: "Cargando..." });
       axios
         .post("http://localhost:4000/login", { user: user, password: password })
         .then((res) => {
           if (!res.data.auth) {
-            setResponse("Hubo un error al ingresar a la cuenta");
+            setResponse({
+              state: true,
+              message: "Hubo un error al ingresar a la cuenta",
+            });
 
             setTimeout(() => {
-              setResponse("");
+              setResponse({ state: false, message: "" });
             }, 5000);
           } else {
-            setResponse("Se ingreso con exito a la cuenta");
+            setResponse({
+              state: true,
+              message: "Se ingreso con exito a la cuenta",
+            });
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("user", res.data.user);
             console.log(res);
             setTimeout(() => {
               window.location.reload();
-            }, 4000);
+            }, 3000);
           }
         })
         .catch(() => {});
@@ -119,7 +129,9 @@ function Login() {
           </div>
         </Form>
       </Wrapper>
-      <h3 className="text-center mt-5">{response}</h3>
+      {response.state && (
+        <h3 className="text-center mt-5">{response.message}</h3>
+      )}
     </div>
   );
 }

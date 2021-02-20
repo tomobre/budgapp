@@ -18,13 +18,17 @@ function NewData() {
   const [date, setDate] = React.useState("");
   const [type, setType] = React.useState("INGRESO");
   const [category, setCategory] = React.useState("FIJO");
-  const [response, setResponse] = React.useState("");
+  const [response, setResponse] = React.useState({
+    state: false,
+    message: "",
+  });
 
   const { register, handleSubmit, errors } = useForm();
 
   const onSubmit = () => {
     const checkUser = localStorage.getItem("user");
     if (checkUser) {
+      setResponse({ state: true, message: "Cargando..." });
       const newInfo = {
         concept: concept,
         amount: parseInt(amount, 10),
@@ -41,25 +45,33 @@ function NewData() {
           setAmount("");
           setDate("");
           setType("INGRESO");
+          setCategory("FIJO");
 
-          setResponse("Se ha añadido la nueva operacion con exito");
+          setResponse({
+            state: true,
+            message: "Se ha añadido la nueva operacion con exito",
+          });
 
           setTimeout(() => {
-            setResponse("");
+            setResponse({ state: false, message: "" });
           }, 5000);
         })
         .catch((err) => {
-          setResponse(
-            `Hubo un error al añadir la nueva operacion: ${err.response}`
-          );
+          setResponse({
+            state: true,
+            message: `Hubo un error al añadir la nueva operacion: ${err.response}`,
+          });
           console.log(err);
 
           setTimeout(() => {
-            setResponse("");
+            setResponse({ state: false, message: "" });
           }, 5000);
         });
     } else {
-      setResponse(`No se ha ingresado a una cuenta`);
+      setResponse({ state: true, message: `No se ha ingresado a una cuenta` });
+      setTimeout(() => {
+        setResponse({ state: false, message: "" });
+      }, 5000);
     }
   };
 
@@ -115,6 +127,10 @@ function NewData() {
                   message: "El monto a cargar es requerido",
                 },
                 min: { value: 1, message: "Monto no valido" },
+                max: {
+                  value: 1000000,
+                  message: "Monto mayor a un millon no valido",
+                },
               })}
               name="amount"
               type="number"
@@ -123,23 +139,28 @@ function NewData() {
               onChange={(e) => setAmount(e.target.value)}
             />
           </Form.Group>
-
-          <Form.Group controlId="exampleForm.ControlSelect1">
-            <Form.Control as="select" onChange={(e) => setType(e.target.value)}>
-              <option value="INGRESO">INGRESO</option>
-              <option value="EGRESO">EGRESO</option>
-            </Form.Control>
-          </Form.Group>
-
+          <div key="1456">
+            <Form.Group controlId="exampleForm.ControlSelect1">
+              <Form.Control
+                as="select"
+                onChange={(e) => {
+                  setType(e.target.value);
+                  setCategory(
+                    e.target.value === "INGRESO" ? "FIJO" : "ALIMENTACION"
+                  );
+                }}
+              >
+                <option value="INGRESO">INGRESO</option>
+                <option value="EGRESO">EGRESO</option>
+              </Form.Control>
+            </Form.Group>
+          </div>
           {type === "INGRESO" ? (
             <Form.Group controlId="exampleForm.ControlSelect1">
               <Form.Control
                 as="select"
                 onChange={(e) => setCategory(e.target.value)}
               >
-                <option value="" disabled defaultValue>
-                  Categoria
-                </option>
                 <option value="FIJO">FIJO</option>
                 <option value="VARIABLE">VARIABLE</option>
                 <option value="EXTRAORDINARIO">EXTRAORDINARIO</option>
@@ -151,9 +172,6 @@ function NewData() {
                 as="select"
                 onChange={(e) => setCategory(e.target.value)}
               >
-                <option value="" disabled defaultValue>
-                  Categoria
-                </option>
                 <option value="ALIMENTACION">ALIMENTACION</option>
                 <option value="CUENTA Y PAGOS">CUENTA Y PAGOS</option>
                 <option value="CASA">CASA</option>
@@ -181,7 +199,9 @@ function NewData() {
           </div>
         </Form>
       </Wrapper>
-      <h3 className="text-center mt-5">{response}</h3>
+      {response.state && (
+        <h3 className="text-center mt-5">{response.message}</h3>
+      )}
     </div>
   );
 }
