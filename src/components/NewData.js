@@ -1,6 +1,8 @@
 import React from "react";
 import axios from "axios";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import styled from "styled-components/macro";
@@ -16,13 +18,13 @@ const Wrapper = styled.div`
 function NewData() {
   const [concept, setConcept] = React.useState("");
   const [amount, setAmount] = React.useState("");
-  const [date, setDate] = React.useState("");
+  const [date, setDate] = React.useState(new Date());
   const [type, setType] = React.useState("INGRESO");
   const [category, setCategory] = React.useState("FIJO");
   const [response, setResponse] = React.useState({ state: false, message: "" });
 
   const timeout = React.useRef(undefined);
-  const { register, handleSubmit, errors } = useForm({
+  const { register, handleSubmit, errors, control } = useForm({
     reValidateMode: "onSubmit",
   });
 
@@ -37,12 +39,15 @@ function NewData() {
   const onSubmit = () => {
     const checkUser = localStorage.getItem("user");
     if (checkUser) {
-      console.log(date);
       setResponse({ state: true, message: "Cargando..." });
+      let dateTransf = `${date.getFullYear()}-${
+        date.getMonth() + 1
+      }-${date.getDate()}`;
+      console.log(dateTransf);
       const newInfo = {
         concept: concept,
         amount: parseInt(amount, 10),
-        date: date,
+        date: dateTransf,
         type: type,
         user: checkUser,
         category: category,
@@ -52,7 +57,7 @@ function NewData() {
         .then((res) => {
           setConcept("");
           setAmount("");
-          setDate("");
+          setDate(false);
           setResponse({
             state: true,
             message: "Se ha añadido la nueva operacion con exito",
@@ -96,18 +101,31 @@ function NewData() {
         <h3 className="mb-5 text-center">NUEVA OPERACIÓN</h3>
         <Form onKeyUp={handleKeyUp}>
           <Form.Group>
-            <Form.Control
-              ref={register({
+            <Controller
+              rules={{
                 required: {
                   value: true,
                   message: "La fecha es requerida",
                 },
-              })}
+              }}
               name="date"
+              defaultValue={date}
               type="date"
-              placeholder="fecha"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              control={control}
+              onChange={(date) => setDate(date)}
+              render={({ onChange, value }) => (
+                <DatePicker
+                  wrapperClassName="w-100"
+                  placeholderText="Fecha"
+                  onChange={(value) => setDate(value)}
+                  selected={date}
+                  dateFormat="dd/MM/yyyy"
+                  maxDate={new Date()}
+                  showYearDropdown
+                  scrollableMonthYearDropdown
+                  customInput={<Form.Control />}
+                />
+              )}
             />
           </Form.Group>
           <Form.Group>
