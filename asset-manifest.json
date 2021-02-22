@@ -1,23 +1,23 @@
 {
   "files": {
     "main.css": "/budgapp/static/css/main.6dea0f05.chunk.css",
-    "main.js": "/budgapp/static/js/main.7dbf9f8e.chunk.js",
-    "main.js.map": "/budgapp/static/js/main.7dbf9f8e.chunk.js.map",
+    "main.js": "/budgapp/static/js/main.2b20bec0.chunk.js",
+    "main.js.map": "/budgapp/static/js/main.2b20bec0.chunk.js.map",
     "runtime-main.js": "/budgapp/static/js/runtime-main.75473a94.js",
     "runtime-main.js.map": "/budgapp/static/js/runtime-main.75473a94.js.map",
-    "static/css/2.150d169a.chunk.css": "/budgapp/static/css/2.150d169a.chunk.css",
-    "static/js/2.36a76837.chunk.js": "/budgapp/static/js/2.36a76837.chunk.js",
-    "static/js/2.36a76837.chunk.js.map": "/budgapp/static/js/2.36a76837.chunk.js.map",
+    "static/css/2.f42afd15.chunk.css": "/budgapp/static/css/2.f42afd15.chunk.css",
+    "static/js/2.fda13200.chunk.js": "/budgapp/static/js/2.fda13200.chunk.js",
+    "static/js/2.fda13200.chunk.js.map": "/budgapp/static/js/2.fda13200.chunk.js.map",
     "index.html": "/budgapp/index.html",
-    "static/css/2.150d169a.chunk.css.map": "/budgapp/static/css/2.150d169a.chunk.css.map",
+    "static/css/2.f42afd15.chunk.css.map": "/budgapp/static/css/2.f42afd15.chunk.css.map",
     "static/css/main.6dea0f05.chunk.css.map": "/budgapp/static/css/main.6dea0f05.chunk.css.map",
-    "static/js/2.36a76837.chunk.js.LICENSE.txt": "/budgapp/static/js/2.36a76837.chunk.js.LICENSE.txt"
+    "static/js/2.fda13200.chunk.js.LICENSE.txt": "/budgapp/static/js/2.fda13200.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.75473a94.js",
-    "static/css/2.150d169a.chunk.css",
-    "static/js/2.36a76837.chunk.js",
+    "static/css/2.f42afd15.chunk.css",
+    "static/js/2.fda13200.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.7dbf9f8e.chunk.js"
+    "static/js/main.2b20bec0.chunk.js"
   ]
 }
