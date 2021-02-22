@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/budgapp/static/css/main.6dea0f05.chunk.css",
-    "main.js": "/budgapp/static/js/main.82386612.chunk.js",
-    "main.js.map": "/budgapp/static/js/main.82386612.chunk.js.map",
+    "main.js": "/budgapp/static/js/main.7dbf9f8e.chunk.js",
+    "main.js.map": "/budgapp/static/js/main.7dbf9f8e.chunk.js.map",
     "runtime-main.js": "/budgapp/static/js/runtime-main.75473a94.js",
     "runtime-main.js.map": "/budgapp/static/js/runtime-main.75473a94.js.map",
     "static/css/2.150d169a.chunk.css": "/budgapp/static/css/2.150d169a.chunk.css",
@@ -18,6 +18,6 @@
     "static/css/2.150d169a.chunk.css",
     "static/js/2.36a76837.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.82386612.chunk.js"
+    "static/js/main.7dbf9f8e.chunk.js"
   ]
 }
