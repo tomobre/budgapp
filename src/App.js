@@ -1,5 +1,5 @@
 import React from "react";
-import { Route } from "react-router-dom";
+import { Route, HashRouter } from "react-router-dom";
 import { ModifyOpProvider } from "./context/ModifyOpContext";
 import NavBar from "./components/NavBar";
 import Home from "./components/Home";
@@ -19,27 +19,29 @@ const Title = styled.h3`
 
 function App() {
   return (
-    <Wrapper className="container">
-      <div className="container mt-5 mb-2 d-flex justify-content-center">
-        <Title className="text-right mr-3 mt-2">
-          BUDG
-          <br />
-          APP
-        </Title>
-        <img
-          src="https://icongr.am/clarity/wallet.svg?size=120&color=ff42a7"
-          alt="Logo app"
-        />
-      </div>
-      <NavBar />
-      <Route exact path="/budgapp/login" component={LogIn} />
-      <Route exact path="/budgapp/register" component={Register} />
-      <Route exact path="/budgapp/newdata" component={NewData} />
-      <Route exact path="/budgapp/categories" component={Categories} />
-      <ModifyOpProvider>
-        <Route exact path="/budgapp" component={Home} />
-      </ModifyOpProvider>
-    </Wrapper>
+    <HashRouter basename="/">
+      <Wrapper className="container">
+        <div className="container mt-5 mb-2 d-flex justify-content-center">
+          <Title className="text-right mr-3 mt-2">
+            BUDG
+            <br />
+            APP
+          </Title>
+          <img
+            src="https://icongr.am/clarity/wallet.svg?size=120&color=ff42a7"
+            alt="Logo app"
+          />
+        </div>
+        <NavBar />
+        <Route exact path="/login" component={LogIn} />
+        <Route exact path="/register" component={Register} />
+        <Route exact path="/newdata" component={NewData} />
+        <Route exact path="/categories" component={Categories} />
+        <ModifyOpProvider>
+          <Route exact path="/" component={Home} />
+        </ModifyOpProvider>
+      </Wrapper>
+    </HashRouter>
   );
 }
 
