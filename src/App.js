@@ -32,12 +32,12 @@ function App() {
         />
       </div>
       <NavBar />
-      <Route exact path="/login" component={LogIn} />
-      <Route exact path="/register" component={Register} />
-      <Route exact path="/newdata" component={NewData} />
-      <Route exact path="/categories" component={Categories} />
+      <Route exact path="/budgapp/login" component={LogIn} />
+      <Route exact path="/budgapp/register" component={Register} />
+      <Route exact path="/budgapp/newdata" component={NewData} />
+      <Route exact path="/budgapp/categories" component={Categories} />
       <ModifyOpProvider>
-        <Route exact path="/" component={Home} />
+        <Route exact path="/budgapp" component={Home} />
       </ModifyOpProvider>
     </Wrapper>
   );
