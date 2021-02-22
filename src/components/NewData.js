@@ -19,12 +19,9 @@ function NewData() {
   const [date, setDate] = React.useState("");
   const [type, setType] = React.useState("INGRESO");
   const [category, setCategory] = React.useState("FIJO");
-  const [response, setResponse] = React.useState({
-    state: false,
-    message: "",
-  });
-  const timeout = React.useRef(undefined);
+  const [response, setResponse] = React.useState({ state: false, message: "" });
 
+  const timeout = React.useRef(undefined);
   const { register, handleSubmit, errors } = useForm();
 
   React.useEffect(() => {
@@ -53,7 +50,6 @@ function NewData() {
           setConcept("");
           setAmount("");
           setDate("");
-
           setResponse({
             state: true,
             message: "Se ha añadido la nueva operacion con exito",
@@ -70,8 +66,6 @@ function NewData() {
               err.response ? err.response.status : 503
             } al registrarse: ${err.response ? err.response.data[0].msg : err}`,
           });
-          console.log(err);
-
           setTimeout(() => {
             setResponse({ state: false, message: "" });
           }, 5000);
@@ -113,7 +107,7 @@ function NewData() {
               onChange={(e) => setDate(e.target.value)}
             />
           </Form.Group>
-          <Form.Group controlId="formBasicEmail">
+          <Form.Group>
             <Form.Control
               ref={register({
                 required: {
@@ -136,7 +130,6 @@ function NewData() {
               type="text"
             />
           </Form.Group>
-
           <Form.Group>
             <Form.Control
               ref={register({
@@ -181,7 +174,7 @@ function NewData() {
                   onChange={(e) => setCategory(e.target.value)}
                 >
                   <option defaultValue value="FIJO">
-                    FIJO
+                    FIJO{" "}
                   </option>
                   <option value="VARIABLE">VARIABLE</option>
                   <option value="EXTRAORDINARIO">EXTRAORDINARIO</option>
@@ -190,12 +183,13 @@ function NewData() {
             </div>
           ) : (
             <div key="1813">
-              <Form.Group controlId="exampleForm.ControlSelect1">
+              <Form.Group>
                 <Form.Control
                   as="select"
                   onChange={(e) => setCategory(e.target.value)}
                 >
                   <option defaultValue value="ALIMENTACION">
+                    {" "}
                     ALIMENTACION
                   </option>
                   <option value="CUENTA Y PAGOS">CUENTA Y PAGOS</option>

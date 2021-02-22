@@ -1,12 +1,13 @@
-import NewData from "./NewData";
-import { Route } from "react-router-dom";
-import Home from "./Home";
-import NavBar from "./NavBar";
-import styled from "styled-components/macro";
-import Register from "./Register";
-import LogIn from "./Login";
 import React from "react";
-import Categories from "./Categories";
+import { Route } from "react-router-dom";
+import { ModifyOpProvider } from "./context/ModifyOpContext";
+import NavBar from "./components/NavBar";
+import Home from "./components/Home";
+import NewData from "./components/NewData";
+import Register from "./components/Register";
+import LogIn from "./components/Login";
+import Categories from "./components/Categories";
+import styled from "styled-components/macro";
 
 const Wrapper = styled.div`
   font-family: "Quicksand", sans-serif;
@@ -30,13 +31,14 @@ function App() {
           alt="Logo app"
         />
       </div>
-
       <NavBar />
       <Route exact path="/login" component={LogIn} />
       <Route exact path="/register" component={Register} />
       <Route exact path="/newdata" component={NewData} />
       <Route exact path="/categories" component={Categories} />
-      <Route exact path="/" component={Home} />
+      <ModifyOpProvider>
+        <Route exact path="/" component={Home} />
+      </ModifyOpProvider>
     </Wrapper>
   );
 }

@@ -44,7 +44,6 @@ function NavBar() {
             <Link className="mr-5 text-decoration-none" to="/">
               Inicio
             </Link>
-
             <Link className=" mr-5 text-decoration-none" to="/login">
               Ingresar
             </Link>

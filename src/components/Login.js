@@ -14,9 +14,9 @@ const Wrapper = styled.div`
 `;
 
 function Login() {
-  const [response, setResponse] = React.useState({ state: false, message: "" });
   const [user, setUser] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [response, setResponse] = React.useState({ state: false, message: "" });
 
   const { register, handleSubmit, errors } = useForm();
 
@@ -27,7 +27,6 @@ function Login() {
         state: true,
         message: "Para poder ingresar debe salir de su cuenta actual",
       });
-
       setTimeout(() => {
         setResponse({ state: false, message: "" });
       }, 4000);
@@ -41,7 +40,6 @@ function Login() {
               state: true,
               message: "Usuario o contraseña incorrecto",
             });
-
             setTimeout(() => {
               setResponse({ state: false, message: "" });
             }, 5000);
@@ -52,21 +50,18 @@ function Login() {
             });
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("user", res.data.user);
-            console.log(res);
             setTimeout(() => {
               window.location.reload();
             }, 3000);
           }
         })
         .catch((err) => {
-          //console.log(err.response.data[0]);
           setResponse({
             state: true,
             message: `Ocurrio un error ${
               err.response ? err.response.status : 503
             } al registrarse: ${err.response ? err.response.data[0].msg : err}`,
           });
-
           setTimeout(() => {
             setResponse({ state: false, message: "" });
           }, 5000);
@@ -136,14 +131,12 @@ function Login() {
               type="password"
             />
           </Form.Group>
-
           <span className="text-danger text-small d-block mb-2">
             {errors.user && errors.user.message}
           </span>
           <span className="text-danger text-small d-block mb-2">
             {errors.password && errors.password.message}
           </span>
-
           <div className=" mt-5 mb-2 d-flex justify-content-center">
             <Button onClick={handleSubmit(onLogin)} variant="primary">
               Enviar
