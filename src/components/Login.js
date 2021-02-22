@@ -18,7 +18,9 @@ function Login() {
   const [password, setPassword] = React.useState("");
   const [response, setResponse] = React.useState({ state: false, message: "" });
 
-  const { register, handleSubmit, errors } = useForm();
+  const { register, handleSubmit, errors } = useForm({
+    reValidateMode: "onSubmit",
+  });
 
   const onLogin = () => {
     const alreadyLogged = localStorage.getItem("token");

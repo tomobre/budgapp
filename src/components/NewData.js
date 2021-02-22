@@ -22,7 +22,9 @@ function NewData() {
   const [response, setResponse] = React.useState({ state: false, message: "" });
 
   const timeout = React.useRef(undefined);
-  const { register, handleSubmit, errors } = useForm();
+  const { register, handleSubmit, errors } = useForm({
+    reValidateMode: "onSubmit",
+  });
 
   React.useEffect(() => {
     return () => {
@@ -35,6 +37,7 @@ function NewData() {
   const onSubmit = () => {
     const checkUser = localStorage.getItem("user");
     if (checkUser) {
+      console.log(date);
       setResponse({ state: true, message: "Cargando..." });
       const newInfo = {
         concept: concept,

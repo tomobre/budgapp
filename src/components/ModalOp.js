@@ -61,7 +61,9 @@ function ModalOp() {
   const [modifyCategory, setModifyCategory] = modifyCategoryKey;
   const [modal, setModal] = modalKey;
 
-  const { register, handleSubmit, errors } = useForm();
+  const { register, handleSubmit, errors } = useForm({
+    reValidateMode: "onSubmit",
+  });
 
   const onSubmit = (e) => {
     setModifyOk({ id: "", message: "" });
