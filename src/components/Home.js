@@ -272,7 +272,11 @@ function Home() {
                 .map((info) => {
                   return (
                     <tr key={info.id}>
-                      <td>{new Date(info.date).toLocaleDateString()}</td>
+                      <td>
+                        {new Date(info.date).toLocaleDateString("es-AR", {
+                          timeZone: "UTC",
+                        })}
+                      </td>
                       <td>{info.concept}</td>
                       <td>{info.type}</td>
                       <td>{info.amount.toLocaleString("es")} $</td>
