@@ -45,7 +45,7 @@ function NewData() {
         category: category,
       };
       axios
-        .post("http://localhost:4000/add", newInfo)
+        .post("https://budgapp-back.herokuapp.com/add", newInfo)
         .then((res) => {
           setConcept("");
           setAmount("");

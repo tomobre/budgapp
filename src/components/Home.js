@@ -55,13 +55,13 @@ function Home() {
     let mounted = true;
     if (checkToken) {
       axios
-        .get("http://localhost:4000/user/auth", {
+        .get("https://budgapp-back.herokuapp.com/user/auth", {
           headers: { "x-access-token": localStorage.getItem("token") },
         })
         .then((res) => {
           let user = localStorage.getItem("user");
           axios
-            .get(`http://localhost:4000/operations/${user}`)
+            .get(`https://budgapp-back.herokuapp.com/operations/${user}`)
             .then((info) => {
               if (mounted) {
                 setData(info.data);
@@ -94,15 +94,15 @@ function Home() {
                     setTotalCount(0 - sumEgr.amount);
                   }
                 } else {
-                  setTimeout(() => {
-                    if (mounted) {
+                  if (mounted) {
+                    setTimeout(() => {
                       setResponseData({
                         state: true,
                         message:
                           "No hay operaciones registradas con el usuario",
                       });
-                    }
-                  }, 5000);
+                    }, 5000);
+                  }
                 }
               }
             })
@@ -157,7 +157,7 @@ function Home() {
     setModal(true);
     setModifyOk({ id: e.target.id, message: "Cargando..." });
     axios
-      .get(`http://localhost:4000/operations/user/${e.target.id}`)
+      .get(`https://budgapp-back.herokuapp.com/operations/user/${e.target.id}`)
       .then((res) => {
         setModifyOk({ id: e.target.id, message: "" });
         setModifyConcept(res.data[0].concept);
@@ -194,7 +194,7 @@ function Home() {
     let conf = window.confirm("¿Esta seguro que desea eliminar la operación?");
     if (conf) {
       axios
-        .delete(`http://localhost:4000/delete/${e.target.id}`)
+        .delete(`https://budgapp-back.herokuapp.com/delete/${e.target.id}`)
         .then(() => {
           setResponseModified(`Se eliminó la operacion con exito`);
           setTimeout(() => {

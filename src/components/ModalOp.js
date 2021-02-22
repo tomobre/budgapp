@@ -75,7 +75,10 @@ function ModalOp() {
 
     axios
       .put(
-        `http://localhost:4000/update/${parseInt(modifyOk.id, 10)}`,
+        `https://budgapp-back.herokuapp.com/update/${parseInt(
+          modifyOk.id,
+          10
+        )}`,
         updateData
       )
       .then(() => {

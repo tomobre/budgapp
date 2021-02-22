@@ -33,7 +33,10 @@ function Login() {
     } else {
       setResponse({ state: true, message: "Cargando..." });
       axios
-        .post("http://localhost:4000/login", { user: user, password: password })
+        .post("https://budgapp-back.herokuapp.com/login", {
+          user: user,
+          password: password,
+        })
         .then((res) => {
           if (!res.data.auth) {
             setResponse({

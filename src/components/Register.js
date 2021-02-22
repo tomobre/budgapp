@@ -23,7 +23,7 @@ function Register() {
   const onRegister = () => {
     setResponse({ state: true, message: "Cargando..." });
     axios
-      .post("http://localhost:4000/register", {
+      .post("https://budgapp-back.herokuapp.com/register", {
         user: user,
         password: password,
       })
