@@ -23,55 +23,44 @@ function Login() {
   });
 
   const onLogin = () => {
-    const alreadyLogged = localStorage.getItem("token");
-    if (alreadyLogged) {
-      setResponse({
-        state: true,
-        message: "Para poder ingresar debe salir de su cuenta actual",
-      });
-      setTimeout(() => {
-        setResponse({ state: false, message: "" });
-      }, 4000);
-    } else {
-      setResponse({ state: true, message: "Cargando..." });
-      axios
-        .post("https://budgapp-back.herokuapp.com/login", {
-          user: user,
-          password: password,
-        })
-        .then((res) => {
-          if (!res.data.auth) {
-            setResponse({
-              state: true,
-              message: "Usuario o contraseña incorrecto",
-            });
-            setTimeout(() => {
-              setResponse({ state: false, message: "" });
-            }, 5000);
-          } else {
-            setResponse({
-              state: true,
-              message: "Se ingreso con exito a la cuenta",
-            });
-            localStorage.setItem("token", res.data.token);
-            localStorage.setItem("user", res.data.user);
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          }
-        })
-        .catch((err) => {
+    setResponse({ state: true, message: "Cargando..." });
+    axios
+      .post("https://budgapp-back.herokuapp.com/login", {
+        user: user,
+        password: password,
+      })
+      .then((res) => {
+        if (!res.data.auth) {
           setResponse({
             state: true,
-            message: `Ocurrio un error ${
-              err.response ? err.response.status : 503
-            } al registrarse: ${err.response ? err.response.data[0].msg : err}`,
+            message: "Usuario o contraseña incorrecto",
           });
           setTimeout(() => {
             setResponse({ state: false, message: "" });
           }, 5000);
+        } else {
+          setResponse({
+            state: true,
+            message: "Se ingreso con exito a la cuenta",
+          });
+          localStorage.setItem("token", res.data.token);
+          localStorage.setItem("user", res.data.user);
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }
+      })
+      .catch((err) => {
+        setResponse({
+          state: true,
+          message: `Ocurrio un error ${
+            err.response ? err.response.status : 503
+          } al registrarse: ${err.response ? err.response.data[0].msg : err}`,
         });
-    }
+        setTimeout(() => {
+          setResponse({ state: false, message: "" });
+        }, 5000);
+      });
   };
 
   const handleKeyUp = (e) => {
@@ -80,7 +69,13 @@ function Login() {
     }
   };
 
-  return (
+  return localStorage.getItem("token") ? (
+    <div>
+      <h3 className="text-center mt-5 mb-5">
+        Para poder Ingresar debe salir de su cuenta actual
+      </h3>
+    </div>
+  ) : (
     <div>
       {response.state && (
         <h3 className="text-center mt-5 mb-5">{response.message}</h3>
